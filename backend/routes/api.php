@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +17,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/books', [BookController::class, 'index']);
+
+Route::get('/books/{author}', [BookController::class, 'show']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Route::get('/profile', function (Request $request) {
+    //     return auth()->user();
+    // });
+    Route::resource('user.reservations', ReservationController::class)->only("index", "store", "destroy");
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+
+Route::group(['middleware' => ['auth:sanctum'], 'prefix' => 'admin'], function () {
+    // Route::get('/profile', function (Request $request) {
+    //     return auth()->user();
+    // });
+    Route::resource('book', BookController::class)->only("destroy", "store", "update");
+    // Route::post('/books', [BookController::class, 'show']);
 });
