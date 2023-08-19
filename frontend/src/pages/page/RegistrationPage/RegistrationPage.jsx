@@ -1,17 +1,56 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Registration.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function RegistrationPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  let navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    var data = new FormData();
+    data.append("name", name);
+    data.append("email", email);
+    data.append("password", password);
+
+    var config = {
+      method: "post",
+      url: "http://127.0.0.1:8000/api/register",
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        alert(
+          response.data.data.name +
+            ", you have successfuly registered! Proceed to login!"
+        );
+        navigate("/login");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   return (
     <section class="home">
       <div class="form_container">
         <i class="uil uil-times form_close"></i>
         <div class="form signup_form">
-          <form>
+          <form onSubmit={handleSubmit}>
             <h2>Signup</h2>
             <div class="input_box">
-              <input name="name" id="name" placeholder="Enter your name" />
+              <input
+                name="name"
+                id="name"
+                placeholder="Enter your name"
+                onChange={(e) => setName(e.target.value)}
+              />
               <i class="uil uil-envelope-alt email"></i>
             </div>
             <div class="input_box">
@@ -21,6 +60,7 @@ function RegistrationPage() {
                 type="email"
                 placeholder="Enter your email"
                 required
+                onChange={(e) => setEmail(e.target.value)}
               />
               <i class="uil uil-envelope-alt email"></i>
             </div>
@@ -31,6 +71,7 @@ function RegistrationPage() {
                 type="password"
                 placeholder="Create password"
                 required
+                onChange={(e) => setPassword(e.target.value)}
               />
               <i class="uil uil-lock password"></i>
               <i class="uil uil-eye-slash pw_hide"></i>
